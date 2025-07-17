@@ -6,6 +6,10 @@ import viteLogo from '/vite.svg'
 // import './App.css']
 
 import AuthPage from './components/AuthForm';
+import CreateGroup from './components/Group/CreateGroup';
+import JoinGroup from './components/Group/JoinGroup';
+import PendingRequests from './components/Group/PendingRequsts';
+
 
 
 function App() {
@@ -16,6 +20,9 @@ function App() {
 
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/create" element={<CreateGroup />} />
+      <Route path="/join" element={<JoinGroup />} />
+      <Route path="/pending" element={<PendingRequests />} />
     </Routes>
 
     </Router>

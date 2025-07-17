@@ -34,6 +34,8 @@ const handleSubmit = async (e) => {
 
     console.log('Server response:', response.data);
 
+    localStorage.setItem('token',response.data.token);
+
     // Optional: handle success (e.g., navigate, show message)
   } catch (error) {
     console.error('Submission error:', error.response?.data || error.message);
