@@ -10,13 +10,23 @@ import CreateGroup from './components/Group/CreateGroup';
 import JoinGroup from './components/Group/JoinGroup';
 import PendingRequests from './components/Group/PendingRequsts';
 
+import { useSelector } from 'react-redux';
+import Navbar from './components/Navbar';
+
+
 
 
 function App() {
-  const [count, setCount] = useState(0)
+  
+  const { theme } = useSelector((state) => state.theme);
+
 
   return (
-    <Router>
+
+        <Router>
+    <div className={theme === 'dark' ? 'bg-black text-white min-h-screen' : 'bg-gray-100 text-black min-h-screen'}>
+      <Navbar />
+     
 
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
@@ -25,7 +35,10 @@ function App() {
       <Route path="/pending" element={<PendingRequests />} />
     </Routes>
 
+    </div>
     </Router>
+
+  
   )
 }
 

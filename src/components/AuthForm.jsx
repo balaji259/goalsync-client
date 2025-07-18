@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import api from './api/api'
+import api from './api/api';
+import { loginSuccess } from '../redux/authSlice';
 
 const AuthPage = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+
+  const { theme } = useSelector((state) => state.theme); // ✅ get theme from Redux
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,29 +25,37 @@ const AuthPage = () => {
     });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const endpoint = isSignup ? 'register' : 'login';
-    const data = isSignup
-      ? formData
-      : { email: formData.email, password: formData.password };
+    if (isSignup) {
+      if (!formData.name || !formData.email || !formData.password) {
+        return alert('All fields are required');
+      }
+      if (formData.password !== formData.confirmPassword) {
+        return alert('Passwords do not match');
+      }
+    }
 
-    console.log(`${isSignup ? 'Signup' : 'Login'} submitted:`, data);
+    try {
+      const endpoint = isSignup ? 'register' : 'login';
+      const data = isSignup
+        ? formData
+        : { email: formData.email, password: formData.password };
 
-    const response = await api.post(`/api/auth/${endpoint}`, data);
+      const response = await api.post(`/api/auth/${endpoint}`, data);
+      localStorage.setItem('token', response.data.token);
 
-    console.log('Server response:', response.data);
-
-    localStorage.setItem('token',response.data.token);
-
-    // Optional: handle success (e.g., navigate, show message)
-  } catch (error) {
-    console.error('Submission error:', error.response?.data || error.message);
-    // Optional: show error message to user
-  }
-};
+      dispatch(
+        loginSuccess({
+          token: response.data.token,
+          user: response.data.user,
+        })
+      );
+    } catch (error) {
+      console.error('Submission error:', error.response?.data || error.message);
+    }
+  };
 
   const toggleMode = () => {
     setIsSignup(!isSignup);
@@ -54,13 +68,21 @@ const handleSubmit = async (e) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-4xl h-[500px] bg-white rounded-2xl shadow-2xl overflow-hidden flex">
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 transition-all ${
+        theme === 'dark' ? 'bg-[#0f172a]' : 'bg-gradient-to-br from-slate-100 to-blue-50'
+      }`}
+    >
+      <div
+        className={`relative w-full max-w-4xl h-[500px] overflow-hidden rounded-2xl shadow-2xl flex transition-all ${
+          theme === 'dark' ? 'bg-[#1e293b] text-white' : 'bg-white text-black'
+        }`}
+      >
 
         {/* Left Content */}
         <div className={`w-1/2 p-8 flex flex-col justify-center z-20 transition-transform duration-700 ${isSignup ? '-translate-x-full' : 'translate-x-0'}`}>
           <div className="w-full max-w-sm mx-auto">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Sign In</h3>
+            <h3 className="text-2xl font-bold mb-6 text-center">Sign In</h3>
             <div className="space-y-4">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -70,7 +92,11 @@ const handleSubmit = async (e) => {
                   placeholder="Email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-white border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
                 />
               </div>
 
@@ -82,7 +108,11 @@ const handleSubmit = async (e) => {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className={`w-full pl-10 pr-10 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-white border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
                 />
                 <button
                   type="button"
@@ -102,7 +132,7 @@ const handleSubmit = async (e) => {
             </div>
 
             <div className="mt-4 text-center">
-              <a href="#" className="text-blue-500 hover:text-blue-600 text-sm transition-colors duration-300">
+              <a href="#" className="text-blue-400 hover:text-blue-500 text-sm transition-colors duration-300">
                 Forgot password?
               </a>
             </div>
@@ -110,9 +140,11 @@ const handleSubmit = async (e) => {
         </div>
 
         {/* Right Content */}
-        <div className={`w-1/2 p-8 flex flex-col justify-center absolute top-0 h-full transition-transform duration-700 z-30 bg-white ${isSignup ? 'translate-x-0 left-1/2' : 'translate-x-full left-1/2'}`}>
+        <div className={`w-1/2 p-8 flex flex-col justify-center absolute top-0 h-full transition-transform duration-700 z-30 ${
+          theme === 'dark' ? 'bg-[#1e293b] text-white' : 'bg-white text-black'
+        } ${isSignup ? 'translate-x-0 left-1/2' : 'translate-x-full left-1/2'}`}>
           <div className="w-full max-w-sm mx-auto">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Sign Up</h3>
+            <h3 className="text-2xl font-bold mb-6 text-center">Sign Up</h3>
             <div className="space-y-4">
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -122,7 +154,11 @@ const handleSubmit = async (e) => {
                   placeholder="Full Name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-white border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
                 />
               </div>
 
@@ -134,7 +170,11 @@ const handleSubmit = async (e) => {
                   placeholder="Email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-white border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
                 />
               </div>
 
@@ -146,7 +186,11 @@ const handleSubmit = async (e) => {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className={`w-full pl-10 pr-10 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-white border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
                 />
                 <button
                   type="button"
@@ -165,7 +209,11 @@ const handleSubmit = async (e) => {
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-white border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
                 />
               </div>
 
@@ -178,7 +226,7 @@ const handleSubmit = async (e) => {
             </div>
 
             <div className="mt-4 text-center">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-400">
                 By signing up, you agree to our Terms and Privacy Policy
               </p>
             </div>
@@ -187,15 +235,17 @@ const handleSubmit = async (e) => {
 
         {/* Side Panel */}
         <div className="absolute inset-0 z-10 pointer-events-none">
-          <div className={`absolute inset-y-0 left-1/2 w-1/2 bg-gradient-to-br from-blue-500 to-purple-600 transition-transform duration-700 ${isSignup ? '-translate-x-full' : 'translate-x-0'}`}>
+          <div className={`absolute inset-y-0 left-1/2 w-1/2 bg-gradient-to-br from-blue-500 to-purple-600 transition-transform duration-700 ${
+            isSignup ? '-translate-x-full' : 'translate-x-0'
+          }`}>
             <div className="h-full flex items-center justify-center text-white p-6">
               <div className="text-center">
                 <h2 className="text-3xl font-bold mb-4">
                   {isSignup ? 'Welcome!' : 'Hello Again!'}
                 </h2>
                 <p className="text-blue-100 mb-6">
-                  {isSignup 
-                    ? 'Already have an account? Sign in to continue.' 
+                  {isSignup
+                    ? 'Already have an account? Sign in to continue.'
                     : 'New here? Create an account to get started.'}
                 </p>
                 <button

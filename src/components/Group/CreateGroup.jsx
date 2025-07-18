@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useSelector } from 'react-redux';
 import api from '../api/api';
-
 
 function CreateGroup() {
   const [form, setForm] = useState({
@@ -11,7 +10,8 @@ function CreateGroup() {
     maxMembers: 10,
   });
 
-  const isDarkMode = false;
+  const { theme } = useSelector((state) => state.theme);
+  const isDarkMode = theme === 'dark';
 
   const handleCreate = async () => {
     if (!form.name.trim()) {
@@ -30,14 +30,13 @@ function CreateGroup() {
     }
 
     try {
+      const token = localStorage.getItem('token');
 
-      const token=localStorage.getItem('token');
-  
       await api.post('/api/groups/create', form, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       alert('Group created!');
       setForm({
@@ -51,11 +50,13 @@ function CreateGroup() {
     }
   };
 
+  // Theme-based styles
   const bgMain = isDarkMode ? 'bg-gray-900' : 'bg-gray-100';
   const bgCard = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
+  const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-white';
   const borderColor = isDarkMode ? 'border-gray-600' : 'border-gray-300';
-  const placeholderColor = isDarkMode ? 'placeholder-gray-400' : '';
+  const placeholderColor = isDarkMode ? 'placeholder-gray-400' : 'placeholder-gray-500';
 
   return (
     <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${bgMain}`}>
@@ -67,25 +68,19 @@ function CreateGroup() {
           placeholder="Group name"
           value={form.name}
           onChange={e => setForm({ ...form, name: e.target.value })}
-          className={`w-full px-4 py-2 border rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 ${textColor} ${borderColor} ${placeholderColor}`}
-          required
+          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
+            ${inputBg} ${textColor} ${borderColor} ${placeholderColor}`}
         />
 
-        {/* <select
+        <select
           value={form.type}
           onChange={e => setForm({ ...form, type: e.target.value, joinCode: '' })}
-          className={`w-full px-4 py-2 border rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 ${textColor} ${borderColor}`}
-        > */}
-
-      <select
-  value={form.type}
-  onChange={e => setForm({ ...form, type: e.target.value, joinCode: '' })}
-  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
->
-
-          <option value="public">Public</option>
-          <option value="private">Private (Invite Code)</option>
-          <option value="approval">Approval Needed</option>
+          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
+            ${inputBg} ${textColor} ${borderColor}`}
+        >
+          <option className="bg-white text-black dark:bg-gray-700 dark:text-white" value="public">Public</option>
+          <option className="bg-white text-black dark:bg-gray-700 dark:text-white" value="private">Private (Invite Code)</option>
+          <option className="bg-white text-black dark:bg-gray-700 dark:text-white" value="approval">Approval Needed</option>
         </select>
 
         {form.type === 'private' && (
@@ -94,18 +89,18 @@ function CreateGroup() {
             placeholder="Enter custom invite code"
             value={form.joinCode}
             onChange={e => setForm({ ...form, joinCode: e.target.value })}
-            className={`w-full px-4 py-2 border rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 ${textColor} ${borderColor} ${placeholderColor}`}
-            required
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
+              ${inputBg} ${textColor} ${borderColor} ${placeholderColor}`}
           />
         )}
 
         <input
-          type="text"
+          type="number"
           placeholder="Max members (default 10)"
           value={form.maxMembers}
           onChange={e => setForm({ ...form, maxMembers: e.target.value })}
-          className={`w-full px-4 py-2 border rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 ${textColor} ${borderColor} ${placeholderColor}`}
-          required
+          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
+            ${inputBg} ${textColor} ${borderColor} ${placeholderColor}`}
         />
 
         <button

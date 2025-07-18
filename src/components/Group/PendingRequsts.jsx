@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import api from '../api/api';
 
 function PendingRequests() {
   const [requests, setRequests] = useState([]);
+
+  const { theme } = useSelector((state) => state.theme); // ✅ Redux theme
 
   const getPendingRequests = async () => {
     const token = localStorage.getItem('token');
     try {
       const response = await api.get('/api/groups/pending-requests', {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       setRequests(response.data);
     } catch (e) {
@@ -24,30 +27,53 @@ function PendingRequests() {
 
   const handle = async (id, action) => {
     const token = localStorage.getItem('token');
-    await api.post('/api/groups/handle-request', { requestId: id, action }, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    await api.post(
+      '/api/groups/handle-request',
+      { requestId: id, action },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    });
-    setRequests(requests.filter(r => r._id !== id));
+    );
+    setRequests(requests.filter((r) => r._id !== id));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-10">
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Pending Join Requests</h2>
+    <div
+      className={`min-h-screen p-4 sm:p-6 md:p-10 transition-all ${
+        theme === 'dark' ? 'bg-[#0f172a] text-white' : 'bg-gray-50 text-black'
+      }`}
+    >
+      <div
+        className={`max-w-3xl mx-auto rounded-xl shadow-md p-6 ${
+          theme === 'dark' ? 'bg-[#1e293b] text-white' : 'bg-white text-black'
+        }`}
+      >
+        <h2 className="text-2xl font-semibold mb-4">Pending Join Requests</h2>
 
         {requests.length === 0 ? (
-          <p className="text-gray-500">No pending requests.</p>
+          <p
+            className={`${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-500'
+            }`}
+          >
+            No pending requests.
+          </p>
         ) : (
           <div className="space-y-4">
-            {requests.map(r => (
+            {requests.map((r) => (
               <div
                 key={r._id}
-                className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-100 p-4 rounded-md transition hover:shadow-sm"
+                className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-md transition hover:shadow-sm ${
+                  theme === 'dark'
+                    ? 'bg-[#334155] text-white'
+                    : 'bg-gray-100 text-black'
+                }`}
               >
-                <div className="text-gray-700 mb-2 sm:mb-0">
-                  <span className="font-medium">{r.user.name}</span> → <span className="font-semibold">{r.group.name}</span>
+                <div className="mb-2 sm:mb-0">
+                  <span className="font-medium">{r.user.name}</span> →{' '}
+                  <span className="font-semibold">{r.group.name}</span>
                 </div>
 
                 <div className="flex gap-2">
