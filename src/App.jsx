@@ -12,6 +12,9 @@ import PendingRequests from './components/Group/PendingRequsts';
 
 import { useSelector } from 'react-redux';
 import Navbar from './components/Navbar';
+import Home from './components/Group/Home';
+import GroupPage from './components/Group/GroupPage';
+import CreateGoal from './components/Group/CreateGoal';
 
 
 
@@ -29,10 +32,13 @@ function App() {
      
 
     <Routes>
-      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/" element={<AuthPage />} />
       <Route path="/create" element={<CreateGroup />} />
       <Route path="/join" element={<JoinGroup />} />
       <Route path="/pending" element={<PendingRequests />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/group/:groupId" element={<GroupPage />}  />
+       <Route path="/:groupId/create-goal" element={<CreateGoal />}  />
     </Routes>
 
     </div>
