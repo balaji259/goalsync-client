@@ -12,7 +12,7 @@ const AuthPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { theme } = useSelector((state) => state.theme); // ✅ get theme from Redux
+  const { theme } = useSelector((state) => state.theme);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -57,9 +57,7 @@ const AuthPage = () => {
       );
 
       toast.success(`${isSignup ? "Registration" : "Login"} Successful!`,{duration: 2000});
-
       navigate("/home");
-
 
     } catch (error) {
       toast.error('Submission error:', error.response?.data || error.message,{duration:2000});
@@ -82,13 +80,13 @@ const AuthPage = () => {
         theme === 'dark' ? 'bg-[#0f172a]' : 'bg-gradient-to-br from-slate-100 to-blue-50'
       }`}
     >
+      {/* Desktop Layout */}
       <div
-        className={`relative w-full max-w-4xl h-[500px] overflow-hidden rounded-2xl shadow-2xl flex transition-all ${
+        className={`hidden md:flex relative w-full max-w-4xl h-[500px] overflow-hidden rounded-2xl shadow-2xl transition-all ${
           theme === 'dark' ? 'bg-[#1e293b] text-white' : 'bg-white text-black'
         }`}
       >
-
-        {/* Left Content */}
+        {/* Left Content - Desktop */}
         <div className={`w-1/2 p-8 flex flex-col justify-center z-20 transition-transform duration-700 ${isSignup ? '-translate-x-full' : 'translate-x-0'}`}>
           <div className="w-full max-w-sm mx-auto">
             <h3 className="text-2xl font-bold mb-6 text-center">Sign In</h3>
@@ -148,7 +146,7 @@ const AuthPage = () => {
           </div>
         </div>
 
-        {/* Right Content */}
+        {/* Right Content - Desktop */}
         <div className={`w-1/2 p-8 flex flex-col justify-center absolute top-0 h-full transition-transform duration-700 z-30 ${
           theme === 'dark' ? 'bg-[#1e293b] text-white' : 'bg-white text-black'
         } ${isSignup ? 'translate-x-0 left-1/2' : 'translate-x-full left-1/2'}`}>
@@ -242,7 +240,7 @@ const AuthPage = () => {
           </div>
         </div>
 
-        {/* Side Panel */}
+        {/* Side Panel - Desktop */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div className={`absolute inset-y-0 left-1/2 w-1/2 bg-gradient-to-br from-blue-500 to-purple-600 transition-transform duration-700 ${
             isSignup ? '-translate-x-full' : 'translate-x-0'
@@ -267,7 +265,142 @@ const AuthPage = () => {
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Mobile Layout */}
+      <div
+        className={`md:hidden w-full max-w-sm mx-auto rounded-2xl shadow-2xl transition-all ${
+          theme === 'dark' ? 'bg-[#1e293b] text-white' : 'bg-white text-black'
+        }`}
+      >
+        <div className="p-6 sm:p-8">
+          {/* Mobile Header */}
+          <div className="text-center mb-8">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <User className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+              {isSignup ? 'Create Account' : 'Welcome Back'}
+            </h2>
+            <p className="text-gray-500 text-sm">
+              {isSignup ? 'Sign up to get started' : 'Sign in to your account'}
+            </p>
+          </div>
+
+          {/* Mobile Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {isSignup && (
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-gray-50 border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
+                />
+              </div>
+            )}
+
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                    : 'bg-gray-50 border-gray-200 text-black focus:ring-blue-500'
+                } focus:outline-none focus:ring-2 transition-all duration-300`}
+              />
+            </div>
+
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={`w-full pl-10 pr-10 py-3 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                    : 'bg-gray-50 border-gray-200 text-black focus:ring-blue-500'
+                } focus:outline-none focus:ring-2 transition-all duration-300`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {isSignup && (
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#334155] border-gray-600 text-white placeholder-gray-300 focus:ring-blue-400'
+                      : 'bg-gray-50 border-gray-200 text-black focus:ring-blue-500'
+                  } focus:outline-none focus:ring-2 transition-all duration-300`}
+                />
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transform transition-all duration-300 hover:scale-[1.02] shadow-lg text-base"
+            >
+              {isSignup ? 'Create Account' : 'Sign In'}
+            </button>
+          </form>
+
+          {!isSignup && (
+            <div className="mt-4 text-center">
+              <a href="#" className="text-blue-400 hover:text-blue-500 text-sm transition-colors duration-300">
+                Forgot password?
+              </a>
+            </div>
+          )}
+
+          {isSignup && (
+            <div className="mt-4 text-center">
+              <p className="text-xs text-gray-400 px-4">
+                By signing up, you agree to our Terms and Privacy Policy
+              </p>
+            </div>
+          )}
+
+          {/* Mobile Toggle */}
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600 text-center">
+            <p className="text-gray-500 text-sm mb-3">
+              {isSignup ? 'Already have an account?' : "Don't have an account?"}
+            </p>
+            <button
+              onClick={toggleMode}
+              className="text-blue-500 hover:text-blue-600 font-semibold text-sm transition-colors duration-300"
+            >
+              {isSignup ? 'Sign In' : 'Sign Up'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
