@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import api from '../api/api';
+import { toast } from 'react-hot-toast';
 
 function JoinGroup() {
   const [groups, setGroups] = useState([]);
+  const [filteredGroups, setFilteredGroups] = useState([]);
+  const [search, setSearch] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState(null);
   const [joinCode, setJoinCode] = useState('');
+  const [isJoining, setIsJoining] = useState(false); // New state
 
   const { theme } = useSelector((state) => state.theme);
 
   const getGroups = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await api.get('/api/groups/all', {
+      const response = await api.get('/api/groups/tojoin', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setGroups(response.data);
+      setFilteredGroups(response.data);
     } catch (e) {
       console.error(e.message);
     }
@@ -27,19 +33,57 @@ function JoinGroup() {
     getGroups();
   }, []);
 
-  const join = async () => {
-    const token = localStorage.getItem('token');
-    await api.post(
-      '/api/groups/join',
-      { groupId: selected._id, joinCode },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (value.trim() === '') {
+      setFilteredGroups(groups);
+      setShowDropdown(false);
+    } else {
+      const filtered = groups.filter((g) =>
+        g.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredGroups(filtered);
+      setShowDropdown(true);
+    }
+  };
+
+  const handleSelectFromDropdown = (group) => {
+    setSelected(group);
+    setSearch(group.name);
+    setShowDropdown(false);
+  };
+
+  const join = async (groupType) => {
+    try {
+      setIsJoining(true);
+      const token = localStorage.getItem('token');
+      await api.post(
+        '/api/groups/join',
+        { groupId: selected._id, joinCode },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (groupType === 'public' || groupType === 'private') {
+        toast.success('Joined Successfully', { duration: 2000 });
+      } else {
+        toast.success('Request sent to group creator', { duration: 2000 });
       }
-    );
-    alert('Request sent or joined!');
-    setSelected(null);
+
+       setGroups((prev) => prev.filter((g) => g._id !== selected._id));
+        setFilteredGroups((prev) => prev.filter((g) => g._id !== selected._id));
+
+      setSelected(null);
+    } catch (e) {
+      console.log(e.message);
+      toast.error(e.message);
+    } finally {
+      setIsJoining(false); // Stop loading
+    }
   };
 
   return (
@@ -50,8 +94,46 @@ function JoinGroup() {
     >
       <h2 className="text-2xl font-semibold mb-4 text-center">Join a Group</h2>
 
+      {/* Search Bar */}
+      <div className="relative max-w-md mx-auto mb-6">
+        <input
+          type="text"
+          placeholder="Search group by name..."
+          value={search}
+          onChange={handleSearchChange}
+          onFocus={() => setShowDropdown(search.trim() !== '')}
+          className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring transition ${
+            theme === 'dark'
+              ? 'bg-[#1e293b] text-white border-gray-600 placeholder-gray-400'
+              : 'bg-white text-black border-gray-300'
+          }`}
+        />
+        {showDropdown && filteredGroups.length > 0 && (
+          <ul
+            className={`absolute z-10 w-full mt-1 max-h-60 overflow-y-auto rounded-lg shadow-lg border ${
+              theme === 'dark'
+                ? 'bg-[#1e293b] border-gray-600'
+                : 'bg-white border-gray-300'
+            }`}
+          >
+            {filteredGroups.map((g) => (
+              <li
+                key={g._id}
+                onClick={() => handleSelectFromDropdown(g)}
+                className={`px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white ${
+                  theme === 'dark' ? 'text-white' : 'text-black'
+                }`}
+              >
+                {g.name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Groups Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {groups.map((g) => (
+        {filteredGroups.map((g) => (
           <div
             key={g._id}
             className={`p-4 rounded-xl shadow hover:shadow-md transition cursor-pointer ${
@@ -79,7 +161,9 @@ function JoinGroup() {
           {/* Modal Content */}
           <div
             className={`relative z-50 p-6 rounded-xl shadow-lg w-11/12 max-w-md animate-fadeIn transition-all ${
-              theme === 'dark' ? 'bg-[#1e293b] text-white' : 'bg-white text-black'
+              theme === 'dark'
+                ? 'bg-[#1e293b] text-white'
+                : 'bg-white text-black'
             }`}
           >
             {/* Close Button */}
@@ -109,11 +193,19 @@ function JoinGroup() {
               />
             )}
 
+            {/* Join Button with Spinner */}
             <button
-              onClick={join}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+              onClick={() => join(selected.type)}
+              disabled={isJoining}
+              className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center justify-center ${
+                isJoining ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              Join Group
+              {isJoining ? (
+                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                'Join Group'
+              )}
             </button>
           </div>
         </div>

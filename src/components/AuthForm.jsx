@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import api from './api/api';
 import { loginSuccess } from '../redux/authSlice';
+import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { theme } = useSelector((state) => state.theme); // ✅ get theme from Redux
 
@@ -30,10 +33,10 @@ const AuthPage = () => {
 
     if (isSignup) {
       if (!formData.name || !formData.email || !formData.password) {
-        return alert('All fields are required');
+        return toast.error('All fields are required', {duration:2000});
       }
       if (formData.password !== formData.confirmPassword) {
-        return alert('Passwords do not match');
+        return toast.error('Passwords do not match',{duration:2000});
       }
     }
 
@@ -52,8 +55,14 @@ const AuthPage = () => {
           user: response.data.user,
         })
       );
+
+      toast.success(`${isSignup ? "Registration" : "Login"} Successful!`,{duration: 2000});
+
+      navigate("/home");
+
+
     } catch (error) {
-      console.error('Submission error:', error.response?.data || error.message);
+      toast.error('Submission error:', error.response?.data || error.message,{duration:2000});
     }
   };
 
