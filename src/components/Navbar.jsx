@@ -12,6 +12,8 @@ const Navbar = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
+  const firstLetter = user?.name ? user.name[0].toUpperCase() : 'U';
+
 const handleLogout = () => {
   try {
     dispatch(logout());
@@ -24,16 +26,27 @@ const handleLogout = () => {
 
   return (
     <nav className={`p-4 flex justify-between ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
-      <h1>GoalSync</h1>
+      <h1 n onClick={() => navigate('/home')} className="text-lg md:text-xl font-bold cursor-pointer transition-all duration-300 transform hover:scale-105 hover:text-blue-500">GoalSync</h1>
       <div className="flex items-center gap-4">
-        <button onClick={() => dispatch(toggleTheme())}>
+        <button className="cursor-pointer" onClick={() => dispatch(toggleTheme())}>
           {theme === 'dark' ? '🌞 Light' : '🌙 Dark'}
         </button>
         {isAuthenticated && (
          <>
           {/* <span>{user?.name}</span> */}
           <span className="cursor-pointer" onClick={() => {navigate("/pending")}}>🔔</span>
-          <button onClick={handleLogout}>Logout</button>
+          <div
+              onClick={() => navigate('/profile')}
+              className={`h-8 w-8 flex items-center justify-center rounded-full cursor-pointer font-bold text-sm ${
+                theme === 'dark'
+                  ? 'bg-gray-700 text-white hover:bg-gray-600'
+                  : 'bg-gray-300 text-black hover:bg-gray-400'
+              }`}
+              title="Profile"
+            >
+              {firstLetter}
+            </div>
+          <button onClick={handleLogout}className="cursor-pointer">Logout</button>
         </>
       )}
 

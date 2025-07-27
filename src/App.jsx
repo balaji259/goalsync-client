@@ -15,6 +15,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Group/Home';
 import GroupPage from './components/Group/GroupPage';
 import CreateGoal from './components/Group/CreateGoal';
+import Profile from './components/Profile';
 
 
 
@@ -39,6 +40,7 @@ function App() {
       <Route path="/home" element={<Home />} />
       <Route path="/group/:groupId" element={<GroupPage />}  />
        <Route path="/:groupId/create-goal" element={<CreateGoal />}  />
+       <Route path="/profile" element={<Profile />} />
     </Routes>
 
     </div>
