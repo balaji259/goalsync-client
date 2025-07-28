@@ -26,7 +26,7 @@ const handleLogout = () => {
 
   return (
     <nav className={`p-4 flex justify-between ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
-      <h1 n onClick={() => navigate('/home')} className="text-lg md:text-xl font-bold cursor-pointer transition-all duration-300 transform hover:scale-105 hover:text-blue-500">GoalSync</h1>
+      <h1 onClick={() => navigate('/home')} className="text-lg md:text-xl font-bold cursor-pointer transition-all duration-300 transform hover:scale-105 hover:text-blue-500">GoalSync</h1>
       <div className="flex items-center gap-4">
         <button className="cursor-pointer" onClick={() => dispatch(toggleTheme())}>
           {theme === 'dark' ? '🌞 Light' : '🌙 Dark'}

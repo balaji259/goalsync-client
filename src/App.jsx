@@ -16,6 +16,7 @@ import Home from './components/Group/Home';
 import GroupPage from './components/Group/GroupPage';
 import CreateGoal from './components/Group/CreateGoal';
 import Profile from './components/Profile';
+import FindMatch from './components/Findmatch';
 
 
 
@@ -41,6 +42,7 @@ function App() {
       <Route path="/group/:groupId" element={<GroupPage />}  />
        <Route path="/:groupId/create-goal" element={<CreateGoal />}  />
        <Route path="/profile" element={<Profile />} />
+        <Route path="/find-match" element={<FindMatch />} />
     </Routes>
 
     </div>
