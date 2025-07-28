@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import api from './api/api';
@@ -13,6 +13,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   const { theme } = useSelector((state) => state.theme);
+  const { user, token } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -73,6 +74,11 @@ const AuthPage = () => {
       confirmPassword: ''
     });
   };
+
+  useEffect(()=>{
+    if(token!=null && user!=null)
+        navigate("/home");
+  },[])
 
   return (
     <div
