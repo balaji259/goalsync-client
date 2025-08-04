@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import api from "../api/api";
 import {useParams} from 'react-router-dom';
+import GroupChat from "./GroupChat";
 
 const GroupPage = () => {
   const { groupId } = useParams();
@@ -362,6 +363,7 @@ const GroupPage = () => {
           <TabButton id="overview" label="Overview" icon={BarChart3} active={activeTab === 'overview'} />
           <TabButton id="goals" label="Goals" icon={Target} active={activeTab === 'goals'} />
           <TabButton id="members" label="Members" icon={Users} active={activeTab === 'members'} />
+          <TabButton id="chat" label="chat" icon={Users} active={activeTab === 'chat'} />
           {/* <TabButton id="history" label="History" icon={History} active={activeTab === 'history'} /> */}
         </div>
 
@@ -666,6 +668,13 @@ const GroupPage = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'chat' && (
+        
+          <GroupChat />
+        
+        )}
+
       </div>
     </div>
   );
