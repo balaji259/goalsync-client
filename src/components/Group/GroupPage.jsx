@@ -20,7 +20,8 @@ import {
   Clock,
   MoreVertical,
   Edit3,
-  Trash2
+  Trash2,
+  MessageCircle
 } from 'lucide-react';
 import api from "../api/api";
 import {useParams} from 'react-router-dom';
@@ -43,7 +44,7 @@ const GroupPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
+      // console.log(response.data);
       
       // Initialize progress for all members if not exists
       const updatedGroup = { ...response.data };
@@ -345,15 +346,7 @@ const GroupPage = () => {
                 <Plus className="w-4 h-4" />
                 <span>Create Goal</span>
               </button>
-              {/* {isCreator && (
-                <button className={`p-2 rounded-lg transition-all duration-200 ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-                }`}>
-                  <Settings className="w-5 h-5" />
-                </button>
-              )} */}
+              
             </div>
           </div>
         </div>
@@ -363,8 +356,8 @@ const GroupPage = () => {
           <TabButton id="overview" label="Overview" icon={BarChart3} active={activeTab === 'overview'} />
           <TabButton id="goals" label="Goals" icon={Target} active={activeTab === 'goals'} />
           <TabButton id="members" label="Members" icon={Users} active={activeTab === 'members'} />
-          <TabButton id="chat" label="chat" icon={Users} active={activeTab === 'chat'} />
-          {/* <TabButton id="history" label="History" icon={History} active={activeTab === 'history'} /> */}
+          <TabButton id="chat" label="chat" icon={MessageCircle} active={activeTab === 'chat'} />
+          
         </div>
 
         {/* Tab Content */}
@@ -653,22 +646,7 @@ const GroupPage = () => {
           </div>
         )}
 
-        {activeTab === 'history' && (
-          <div className={`${
-            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-          } rounded-xl shadow-lg p-6`}>
-            <h3 className="text-xl font-semibold mb-6">Goal History</h3>
-            <div className="text-center py-8">
-              <History className={`w-16 h-16 mx-auto mb-4 ${
-                theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-              }`} />
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-                Goal history will appear here when goals are completed
-              </p>
-            </div>
-          </div>
-        )}
-
+       
         {activeTab === 'chat' && (
         
           <GroupChat />

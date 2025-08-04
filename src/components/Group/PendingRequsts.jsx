@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import api from '../api/api';
+import { setPendingRequestsCount, decrementPendingRequestsCount } from '../../redux/approvalSlice';
+
 
 function PendingRequests() {
   const [requests, setRequests] = useState([]);
 
-  const { theme } = useSelector((state) => state.theme); // ✅ Redux theme
+  const dispatch = useDispatch();
+
+  const { theme } = useSelector((state) => state.theme); 
 
   const getPendingRequests = async () => {
     const token = localStorage.getItem('token');
@@ -16,6 +20,7 @@ function PendingRequests() {
         },
       });
       setRequests(response.data);
+      dispatch(setPendingRequestsCount(response.data.length));
     } catch (e) {
       console.log(e.message);
     }
@@ -37,6 +42,7 @@ function PendingRequests() {
       }
     );
     setRequests(requests.filter((r) => r._id !== id));
+    dispatch(decrementPendingRequestsCount());
   };
 
   return (

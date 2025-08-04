@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../redux/themeSlice';
@@ -13,6 +12,10 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const firstLetter = user?.name ? user.name[0].toUpperCase() : 'U';
+
+  const pendingCount = useSelector((state) => state.approval.pendingRequestsCount);
+
+
 
 const handleLogout = () => {
   try {
@@ -34,7 +37,15 @@ const handleLogout = () => {
         {isAuthenticated && (
          <>
           {/* <span>{user?.name}</span> */}
-          <span className="cursor-pointer" onClick={() => {navigate("/pending")}}>🔔</span>
+          {/* <span className="cursor-pointer" onClick={() => {navigate("/pending")}}>🔔</span> */}
+          <div className="relative cursor-pointer" onClick={() => navigate('/pending')}>
+            <span>🔔</span>
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5">
+                {pendingCount}
+              </span>
+            )}
+          </div>
           <div
               onClick={() => navigate('/profile')}
               className={`h-8 w-8 flex items-center justify-center rounded-full cursor-pointer font-bold text-sm ${
