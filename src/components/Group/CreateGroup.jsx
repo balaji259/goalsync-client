@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import api from '../api/api';
+import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 function CreateGroup() {
   const [form, setForm] = useState({
@@ -12,20 +14,21 @@ function CreateGroup() {
 
   const { theme } = useSelector((state) => state.theme);
   const isDarkMode = theme === 'dark';
+  const navigate = useNavigate();
 
   const handleCreate = async () => {
     if (!form.name.trim()) {
-      alert('Group name is required');
+      toast.error('Group name is required', {duration : 2000});
       return;
     }
 
     if (!form.maxMembers || form.maxMembers <= 0) {
-      alert('Max members must be a positive number');
+      toast.error('Max members must be a positive number', {duration : 2000});
       return;
     }
 
     if (form.type === 'private' && !form.joinCode.trim()) {
-      alert('Invite code is required for private groups');
+      toast.error('Invite code is required for private groups', {duration: 2000});
       return;
     }
 
@@ -38,15 +41,16 @@ function CreateGroup() {
         },
       });
 
-      alert('Group created!');
+      toast.success('Group created!', {duration: 2000});
       setForm({
         name: '',
         type: 'public',
         joinCode: '',
         maxMembers: 10,
       });
+      navigate(-1);
     } catch (err) {
-      alert('Error creating group');
+      toast.error('Error creating group', {duration : 2000 });
     }
   };
 

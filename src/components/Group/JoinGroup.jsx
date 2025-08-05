@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import api from '../api/api';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 function JoinGroup() {
   const [groups, setGroups] = useState([]);
@@ -10,7 +11,8 @@ function JoinGroup() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState(null);
   const [joinCode, setJoinCode] = useState('');
-  const [isJoining, setIsJoining] = useState(false); // New state
+  const [isJoining, setIsJoining] = useState(false);
+  const navigate = useNavigate();
 
   const { theme } = useSelector((state) => state.theme);
 
@@ -78,11 +80,14 @@ function JoinGroup() {
         setFilteredGroups((prev) => prev.filter((g) => g._id !== selected._id));
 
       setSelected(null);
+
+      navigate(-1);
+
     } catch (e) {
       console.log(e.message);
       toast.error(e.message);
     } finally {
-      setIsJoining(false); // Stop loading
+      setIsJoining(false);
     }
   };
 

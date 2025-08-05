@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Target, ListTodo, Save, Plus, Trash2 } from "lucide-react";
 import api from "../api/api";
+import { toast } from 'react-hot-toast';
+
 
 const GOAL_CATEGORIES = [
   { id: "fitness", name: "Fitness" },
@@ -21,6 +23,8 @@ const GOAL_TYPES = [
 export default function CreateGoal() {
   const { theme } = useSelector((s) => s.theme);
   const { groupId } = useParams();
+
+
 
   const [goal, setGoal] = useState({
     title: "",
@@ -80,7 +84,7 @@ export default function CreateGoal() {
     };
     try {
       if(!token){
-        alert("No valid token found.Please Login AGAIN !");
+        toast.error("No valid token found.Please Login AGAIN !",{duration : 2000});
         return;
       }
       console.log(token);
@@ -89,8 +93,8 @@ export default function CreateGoal() {
           Authorization: `Bearer ${token}`,
         },
       });
-      alert("Goal created! (see console for payload)");
-      console.log("Response:", response.data);
+      toast.success("Goal created!",{duration : 2000});
+      
       setGoal({
         title: "",
         description: "",
