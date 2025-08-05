@@ -30,12 +30,15 @@ import GroupChat from "./GroupChat";
 const GroupPage = () => {
   const { groupId } = useParams();
   const [group, setGroup] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('goals');
   const [expandedGoal, setExpandedGoal] = useState(null);
   const [editingProgress, setEditingProgress] = useState(null);
   const { user, token } = useSelector((state) => state.auth);
   const { theme } = useSelector((state) => state.theme);
   const navigate = useNavigate();
+
+  const [sortOption, setSortOption] = useState('due-nearest');
+
 
   const getGroupInfo = async () => {
     try {
@@ -423,9 +426,45 @@ const GroupPage = () => {
           </div>
         )}
 
+        
         {activeTab === 'goals' && (
   <div className="space-y-6">
-    {group.goals?.length > 0 ? group.goals.map(goal => (
+    
+    {/* Sorting Dropdown */}
+<div className="w-full sm:w-auto flex sm:justify-end mb-4 px-2">
+  <select
+    value={sortOption}
+    onChange={(e) => setSortOption(e.target.value)}
+    className={`w-full sm:w-auto px-4 py-2 rounded-lg border text-sm sm:text-base
+      ${theme === 'dark'
+        ? 'bg-gray-700 text-white border-gray-600'
+        : 'bg-white text-gray-700 border-gray-300'}
+      `}
+  >
+    <option value="created-newest">Created: Newest First</option>
+    <option value="created-oldest">Created: Oldest First</option>
+    <option value="due-nearest">Due Date: Earliest First</option>
+    <option value="due-farthest">Due Date: Latest First</option>
+  </select>
+</div>
+
+
+
+    {/* Sorted Goals Rendering */}
+    {group.goals?.length > 0 ? [...group.goals]
+      .sort((a, b) => {
+        if (sortOption === 'created-newest') {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        } else if (sortOption === 'created-oldest') {
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        } else if (sortOption === 'due-nearest') {
+          return new Date(a.deadline || Infinity) - new Date(b.deadline || Infinity);
+        } else if (sortOption === 'due-farthest') {
+          return new Date(b.deadline || 0) - new Date(a.deadline || 0);
+        }
+        return 0;
+      })
+      .map(goal => (
       <div key={goal._id} className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
         <div className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
@@ -460,23 +499,6 @@ const GroupPage = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              {/* {isCreator && (
-                <button
-                  onClick={() => toggleGoalLock(goal._id)}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
-                    goal.isLocked
-                      ? theme === 'dark'
-                        ? 'bg-red-900 hover:bg-red-800 text-red-200'
-                        : 'bg-red-100 hover:bg-red-200 text-red-600'
-                      : theme === 'dark'
-                        ? 'bg-green-900 hover:bg-green-800 text-green-200'
-                        : 'bg-green-100 hover:bg-green-200 text-green-600'
-                  }`}
-                  title={goal.isLocked ? 'Unlock Goal' : 'Lock Goal'}
-                >
-                  {goal.isLocked ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-                </button>
-              )} */}
               <button
                 onClick={() => setExpandedGoal(expandedGoal === goal._id ? null : goal._id)}
                 className={`p-2 rounded-lg transition-all duration-200 ${
@@ -492,6 +514,7 @@ const GroupPage = () => {
               </button>
             </div>
           </div>
+
 
           {expandedGoal === goal._id && (
             <div className={`mt-6 pt-6 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
