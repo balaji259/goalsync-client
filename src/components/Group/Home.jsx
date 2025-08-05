@@ -108,7 +108,7 @@ const Home = () => {
   <div className="space-x-2">
     <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded" onClick={()=> {navigate("/create")}}>Create</button>
     <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded" onClick={()=> {navigate("/join")}}>Join</button>
-     <button className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded" onClick={()=> {navigate("/find-match")}}>Find-match</button>
+     {/* <button className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded" onClick={()=> {navigate("/find-match")}}>Find-match</button> */}
 
   </div>
 </div>

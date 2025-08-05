@@ -36,7 +36,7 @@ export default function ChatTab() {
   }, [groupId]);
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:8000');
+    socketRef.current = io(import.meta.env.VITE_BACKEND_URL);
     socketRef.current.emit('joinRoom', groupId);
 
     socketRef.current.on('receiveMessage', (msg) => {
