@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 const AuthPage = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,6 +32,8 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
 
     if (isSignup) {
       if (!formData.name || !formData.email || !formData.password) {
@@ -63,6 +66,9 @@ const AuthPage = () => {
     } catch (error) {
       toast.error('Submission error:', error.response?.data || error.message,{duration:2000});
     }
+
+    setLoading(false);
+
   };
 
   const toggleMode = () => {
@@ -138,17 +144,20 @@ const AuthPage = () => {
 
               <button
                 onClick={handleSubmit}
+                disable={loading}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transform transition-all duration-300 hover:scale-105 shadow-lg"
               >
-                Sign In
+                {loading ? "Signing in ...." : "Sign in" }
+                
               </button>
             </div>
 
-            <div className="mt-4 text-center">
+            {/* <div className="mt-4 text-center">
               <a href="#" className="text-blue-400 hover:text-blue-500 text-sm transition-colors duration-300">
                 Forgot password?
               </a>
-            </div>
+            </div> */}
+            
           </div>
         </div>
 
@@ -232,9 +241,10 @@ const AuthPage = () => {
 
               <button
                 onClick={handleSubmit}
+                disable={loading}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transform transition-all duration-300 hover:scale-105 shadow-lg"
               >
-                Create Account
+               {loading ?  "Creating Account ...." : "Create Account" }
               </button>
             </div>
 
